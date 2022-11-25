@@ -35,7 +35,6 @@ function App() {
     setData((prevData) => ({ ...prevData, ...fields }));
   }
 
-  
   const {
     steps,
     currentStepIndex,
@@ -52,7 +51,9 @@ function App() {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    nextStep();
+    if (!isLastStep) return nextStep();
+    alert("Successful Account Creation!");
+    console.log(JSON.stringify(data, null, 2));
   }
   return (
     <div
