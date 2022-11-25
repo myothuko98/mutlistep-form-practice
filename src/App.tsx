@@ -1,7 +1,41 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { AccountForm } from "./AccountForm";
+import { AddressForm } from "./AddressForm";
 import { useMultistepForm } from "./useMultustepForm";
+import { UserForm } from "./UserForm";
+
+type FormData = {
+  firstName: string;
+  lastName: string;
+  age: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  email: string;
+  password: string;
+};
+
+const INITIAL_DATA: FormData = {
+  firstName: "",
+  lastName: "",
+  age: "",
+  street: "",
+  city: "",
+  state: "",
+  zip: "",
+  email: "",
+  password: "",
+};
 
 function App() {
+  const [data, setData] = useState(INITIAL_DATA);
+
+  function UpdateFields(fields: Partial<FormData>) {
+    setData((prevData) => ({ ...prevData, ...fields }));
+  }
+
+  
   const {
     steps,
     currentStepIndex,
@@ -10,7 +44,16 @@ function App() {
     previousStep,
     isFirstStep,
     isLastStep,
-  } = useMultistepForm([<div>One</div>, <div>Two</div>, <div>Three</div>]);
+  } = useMultistepForm([
+    <UserForm {...data} updateFields={UpdateFields} />,
+    <AddressForm {...data} updateFields={UpdateFields} />,
+    <AccountForm {...data} updateFields={UpdateFields} />,
+  ]);
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    nextStep();
+  }
   return (
     <div
       style={{
@@ -23,7 +66,7 @@ function App() {
         fontFamily: "Arial",
       }}
     >
-      <form>
+      <form onSubmit={onSubmit}>
         <div style={{ position: "absolute", top: ".5rem", right: ".5rem" }}>
           {currentStepIndex + 1} / {steps.length}
         </div>
@@ -41,11 +84,7 @@ function App() {
               Back
             </button>
           )}
-          {/* {!isLastStep && ( */}
-          <button type="button" onClick={nextStep}>
-            Next
-          </button>
-          {/* )} */}
+          <button type="submit">{isLastStep ? "Finish" : "Next"}</button>
         </div>
       </form>
     </div>
